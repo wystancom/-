@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#f4d8b7">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <title>团子逃大杯｜七日进化版 Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="theme-taro.css">
+  <link rel="stylesheet" href="mix-machine.css">
+  <link rel="stylesheet" href="journey.css">
+</head>
+<body>
+  <main id="gameShell" class="game-shell" aria-label="团子逃出珍珠奶茶杯的俯视弹跳游戏">
+    <canvas id="gameCanvas" aria-label="俯视奶茶杯内弹跳游戏画面"></canvas>
+
+    <section class="hud hud-top" aria-label="游戏状态">
+      <div class="brand-block">
+        <span class="eyebrow">团子逃大杯 · 七杯旅程</span>
+        <strong id="heightValue">第 0 层</strong>
+      </div>
+      <div class="score-block">
+        <span>最高 <b id="bestValue">0</b></span>
+        <span>糖晶 <b id="scoreValue">0</b></span>
+      </div>
+      <div class="hud-actions">
+        <button id="pauseButton" class="icon-button" type="button" aria-label="暂停游戏" title="暂停（P）">Ⅱ</button>
+        <button id="soundButton" class="icon-button" type="button" aria-label="关闭声音" title="声音（M）">♫</button>
+        <button id="restartButton" class="icon-button" type="button" aria-label="重新开始" title="重开（R）">↻</button>
+      </div>
+    </section>
+
+    <div id="phasePill" class="phase-pill" aria-live="polite">准备起跳</div>
+    <div id="tutorialBubble" class="tutorial-bubble" hidden></div>
+    <div id="toast" class="toast" aria-live="polite" hidden></div>
+    <section id="buffBar" class="buff-bar" aria-label="当前技能"></section>
+    <section id="journeyHud" class="journey-hud" aria-label="本杯订单">
+      <span id="journeyCup">第 1 杯</span>
+      <b id="journeyOrder">三味订单</b>
+      <span id="journeyProgress">0 / 3</span>
+      <small id="journeyCombo">甜度连击 ×0</small>
+    </section>
+
+    <section class="hud hud-bottom" aria-label="操作提示">
+      <div class="risk-legend" aria-label="落点层级说明">
+        <span class="safe"><b>+1层</b><small>稳</small></span>
+        <span class="medium"><b>+2层</b><small>中</small></span>
+        <span class="risk"><b>+3层</b><small>险</small></span>
+        <span class="bonus"><b>+4层</b><small>狂</small></span>
+      </div>
+      <p id="controlHint">顶点后拖动场景，瞄准落点</p>
+    </section>
+
+    <div id="stickVisual" class="stick-visual" hidden aria-hidden="true">
+      <div id="stickKnob" class="stick-knob"></div>
+    </div>
+
+    <section id="introOverlay" class="overlay is-open" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+      <div class="panel intro-panel">
+        <div class="intro-art" aria-hidden="true"><img src="assets/团子逃大杯-概念图.png" alt=""></div>
+        <span class="panel-kicker">七杯旅程 · 弹跳主玩法</span>
+        <h1 id="introTitle">团子逃大杯</h1>
+        <p class="lead">杯底的气泡会把小芋圆不断顶向杯口。拖动或按方向键，让冰块、布丁和奶盖移动到团子的影子下方。</p>
+        <ol class="intro-steps">
+          <li><b>穿过配料层</b><span>只有团子浮得够高，新配料才会从杯壁边缘完整露出。</span></li>
+          <li><b>顶点后瞄准</b><span>团子变大是靠近镜头；影子重新变深，就是正在回落。</span></li>
+          <li><b>掉空会下沉</b><span>配料之间留着大片茶汤；没踩中就会连续沉回低层。</span></li>
+        </ol>
+        <div class="controls-card">
+          <span>电脑：WASD / 方向键</span>
+          <span>手机：按住画面拖动</span>
+        </div>
+        <section class="journey-preview" aria-label="七杯旅程进度">
+          <div class="journey-preview-title"><b>本周七杯</b><span id="journeyMeta">杯贴 0 · 调杯券 1</span></div>
+          <div id="journeyMap" class="journey-map"></div>
+        </section>
+        <button id="startButton" class="primary-button" type="button">先去调一杯</button>
+        <p class="fine-print">弹跳是主玩法；弹珠只负责开局短效配方。完成订单可得杯贴和调杯券，失败后可沿用配方立即再跳。</p>
+      </div>
+    </section>
+
+    <section id="mixMachineOverlay" class="overlay mix-machine-overlay" role="dialog" aria-modal="true" aria-labelledby="mixMachineTitle" hidden>
+      <div class="mix-machine-panel">
+        <header class="mix-machine-header">
+          <span class="panel-kicker">开局调杯机</span>
+          <h2 id="mixMachineTitle">今天的团子是什么味？</h2>
+          <p id="mixMachineHint">先选投放位置，下坠时还能吹气两次。</p>
+        </header>
+        <div class="mix-board-shell">
+          <canvas id="mixMachineCanvas" width="360" height="500" aria-label="团子弹珠调杯机"></canvas>
+          <div id="mixHitToast" class="mix-hit-toast" aria-live="polite" hidden></div>
+        </div>
+        <div id="mixSetupControls" class="mix-controls mix-setup-controls">
+          <div class="mix-lanes" role="group" aria-label="选择投放位置">
+            <button type="button" data-mix-lane="0">左斜口</button>
+            <button type="button" data-mix-lane="1" class="is-selected">正中口</button>
+            <button type="button" data-mix-lane="2">右斜口</button>
+          </div>
+          <button id="mixDropButton" class="primary-button" type="button">投下这颗团子</button>
+          <button id="mixSkipButton" class="text-button" type="button">原味直冲，跳过调杯</button>
+        </div>
+        <div id="mixActiveControls" class="mix-controls mix-active-controls" hidden>
+          <button id="mixBlowLeft" type="button" aria-label="向左吹气">← 向左吹</button>
+          <span id="mixNudgesLeft">吹气 2 次</span>
+          <button id="mixBlowRight" type="button" aria-label="向右吹气">向右吹 →</button>
+        </div>
+        <div id="mixResult" class="mix-result" hidden>
+          <span class="mix-result-kicker">这杯调好了</span>
+          <h3 id="mixRecipeName">清爽原味</h3>
+          <div id="mixEffectCards" class="mix-effect-cards"></div>
+          <div id="mixContractChoice" class="mix-contract-choice" hidden>
+            <b>撞上了黑糖怪味契约</b>
+            <p>可以洗掉，也可接受前 2 次成功落点方向反转，踩稳糖晶 ×1.5。</p>
+            <div>
+              <button id="mixDeclineContract" class="secondary-button is-selected" type="button">洗掉怪味</button>
+              <button id="mixAcceptContract" class="secondary-button" type="button">接受契约</button>
+            </div>
+          </div>
+          <button id="mixEnterRunButton" class="primary-button" type="button">带着配方开逃</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="skillOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="skillTitle" hidden>
+      <div class="panel skill-panel">
+        <span class="panel-kicker">固定里程碑出现，完整120层约7次</span>
+        <h2 id="skillTitle">临时加料三选一</h2>
+        <p>每种加料只维持几跳，剩余次数会显示在杯壁上。</p>
+        <div id="skillChoices" class="skill-choices"></div>
+      </div>
+    </section>
+
+    <section id="reviveOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="reviveTitle" hidden>
+      <div class="panel revive-panel">
+        <span class="ad-label">模拟激励广告｜未接入真实广告</span>
+        <h2 id="reviveTitle">要吹回刚才的高度吗？</h2>
+        <p id="reviveCopy">可以接受下沉，也可以观看一次模拟广告，让吸管气流把团子送回失误前踩稳的配料。</p>
+        <div id="adProgress" class="ad-progress" hidden>
+          <div id="adProgressBar" class="ad-progress-bar"></div>
+          <span id="adProgressText">模拟播放中 3.0 秒</span>
+        </div>
+        <button id="watchAdButton" class="primary-button ad-button" type="button">观看模拟广告并吹回高处</button>
+        <button id="declineAdButton" class="secondary-button" type="button">接受下沉，继续挑战</button>
+        <button id="closePlayingAdButton" class="text-button" type="button" hidden>关闭模拟广告（不发奖励）</button>
+        <p class="fine-print">本 Demo 不请求网络、不加载广告 SDK；成功、关闭与失败均可通过 QA 接口模拟。</p>
+      </div>
+    </section>
+
+    <section id="pauseOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" hidden>
+      <div class="panel compact-panel">
+        <span class="panel-kicker">气泡停在半空</span>
+        <h2 id="pauseTitle">杯中时间暂停</h2>
+        <button id="resumeButton" class="primary-button" type="button">继续冒泡</button>
+        <button id="pauseRestartButton" class="secondary-button" type="button">重新开始</button>
+      </div>
+    </section>
+
+    <section id="gameOverOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle" hidden>
+      <div class="panel compact-panel game-over-panel">
+        <span class="panel-kicker">沉回杯底</span>
+        <h2 id="gameOverTitle">本次逃杯结束</h2>
+        <div class="run-result" aria-label="本局抵达层数">
+          <div class="result-sparks" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <span class="result-label">本局抵达</span>
+          <div class="result-number-row">
+            <strong id="gameOverFloor">0</strong>
+            <span>层</span>
+          </div>
+          <span id="gameOverRecord" class="record-badge" hidden>● 新配料纪录</span>
+        </div>
+        <p id="gameOverStats" class="history-best">
+          <span class="history-icon" aria-hidden="true">◆</span>
+          <span>历史最高</span>
+          <b id="gameOverBest">0 层</b>
+        </p>
+        <p id="gameOverJourney" class="game-over-journey">本杯订单等待结算</p>
+        <button id="gameOverRestartButton" class="primary-button" type="button">沿用配方 · 立即再跳</button>
+        <button id="gameOverRebrewButton" class="secondary-button" type="button">使用调杯券 · 重新调杯</button>
+      </div>
+    </section>
+
+    <aside class="rotate-hint" aria-hidden="true">竖屏体验更完整</aside>
+    <div id="liveRegion" class="sr-only" aria-live="assertive"></div>
+  </main>
+  <script src="perspective.js"></script>
+  <script src="balance.js"></script>
+  <script src="challenges.js"></script>
+  <script src="geometry.js"></script>
+  <script src="theme-handdrawn.js?v=2"></script>
+  <script src="mix-machine.js"></script>
+  <script src="journey.js"></script>
+  <script src="skill-catalog.js"></script>
+  <script src="game-config.js"></script>
+  <script src="utils.js"></script>
+  <script src="qa-scenarios.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

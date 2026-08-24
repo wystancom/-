@@ -1,0 +1,289 @@
+.mix-machine-overlay {
+  z-index: 30;
+  padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 236, 190, 0.34), transparent 38%),
+    rgba(93, 56, 62, 0.72);
+  overflow: hidden;
+}
+
+.mix-machine-panel {
+  width: min(100%, 390px);
+  max-height: 100%;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 8px;
+  padding: 12px;
+  overflow-y: auto;
+  border: 2px solid rgba(113, 67, 63, 0.3);
+  border-radius: 26px 21px 28px 22px;
+  background:
+    radial-gradient(circle at 23% 8%, rgba(255, 255, 255, 0.72), transparent 23%),
+    linear-gradient(150deg, rgba(255, 249, 227, 0.98), rgba(245, 218, 181, 0.98));
+  box-shadow: 0 22px 70px rgba(77, 41, 49, 0.38), inset 0 0 0 3px rgba(255, 255, 255, 0.42);
+  color: #5f3d49;
+  text-align: center;
+  scrollbar-width: none;
+}
+
+.mix-machine-panel::-webkit-scrollbar { display: none; }
+
+.mix-machine-header h2 {
+  margin: 2px 0 1px;
+  color: #603b4a;
+  font-size: clamp(21px, 6vw, 27px);
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.mix-machine-header p {
+  margin: 3px 0 0;
+  color: #8c6269;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.mix-board-shell {
+  position: relative;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+  aspect-ratio: 360 / 500;
+  justify-self: center;
+  align-self: center;
+  overflow: hidden;
+  border: 2px solid rgba(126, 75, 66, 0.26);
+  border-radius: 32px 25px 28px 25px;
+  background: #d7a86f;
+  box-shadow: inset 0 0 32px rgba(102, 55, 58, 0.2), 0 5px 0 rgba(124, 70, 61, 0.12);
+  transition: width 220ms ease;
+}
+
+.mix-machine-panel.is-result {
+  grid-template-rows: auto auto auto;
+}
+
+.mix-machine-panel.is-result .mix-board-shell {
+  width: min(66%, 220px);
+  min-height: 0;
+  height: auto;
+}
+
+#mixMachineCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 360 / 500;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.mix-hit-toast {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  left: 50%;
+  max-width: calc(100% - 32px);
+  padding: 5px 10px;
+  transform: translateX(-50%);
+  border: 2px solid rgba(126, 73, 72, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 248, 222, 0.92);
+  box-shadow: 0 4px 12px rgba(91, 48, 56, 0.18);
+  color: #814b66;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: mix-toast-pop 450ms ease both;
+}
+
+.mix-controls {
+  display: grid;
+  gap: 7px;
+}
+
+.mix-lanes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mix-lanes button,
+.mix-active-controls button {
+  min-height: 35px;
+  border: 2px solid rgba(117, 71, 68, 0.18);
+  border-radius: 13px 10px 14px 11px;
+  background: rgba(255, 247, 219, 0.76);
+  color: #79505b;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.mix-lanes button.is-selected,
+.mix-active-controls button:active {
+  border-color: rgba(172, 93, 139, 0.48);
+  background: rgba(201, 139, 187, 0.2);
+  color: #784563;
+  transform: translateY(1px);
+}
+
+.mix-setup-controls .primary-button,
+.mix-result .primary-button {
+  min-height: 43px;
+  margin-top: 0;
+}
+
+.mix-setup-controls .text-button {
+  min-height: 25px;
+  color: #96727a;
+  font-size: 10px;
+}
+
+.mix-active-controls {
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.mix-active-controls span {
+  min-width: 68px;
+  color: #825765;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.mix-active-controls span.is-empty { color: #b38b91; }
+
+.mix-result {
+  display: grid;
+  gap: 7px;
+  padding: 2px 2px 0;
+}
+
+.mix-result-kicker {
+  color: #ba6652;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.mix-result h3 {
+  margin: -2px 0 1px;
+  color: #75465f;
+  font-size: 23px;
+  line-height: 1.05;
+}
+
+.mix-effect-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.mix-effect-card {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 6px;
+  align-items: center;
+  padding: 7px;
+  border: 2px solid rgba(114, 70, 67, 0.16);
+  border-radius: 15px 12px 16px 12px;
+  background: rgba(255, 249, 226, 0.78);
+  text-align: left;
+}
+
+.mix-effect-card > span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(183, 111, 166, 0.16);
+  color: #9a5685;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.mix-effect-card strong {
+  display: block;
+  color: #694252;
+  font-size: 11px;
+}
+
+.mix-effect-card small {
+  display: block;
+  margin-top: 2px;
+  color: #967078;
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+.mix-contract-choice {
+  padding: 7px;
+  border: 2px dashed rgba(154, 80, 86, 0.3);
+  border-radius: 14px;
+  background: rgba(188, 100, 103, 0.08);
+}
+
+.mix-contract-choice b {
+  color: #8b4656;
+  font-size: 11px;
+}
+
+.mix-contract-choice p {
+  margin: 2px 0 6px;
+  color: #9a6c72;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.mix-contract-choice > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.mix-contract-choice .secondary-button {
+  min-height: 32px;
+  padding: 5px 7px;
+  font-size: 10px;
+}
+
+.mix-contract-choice .secondary-button.is-selected {
+  border-color: rgba(169, 90, 145, 0.42);
+  background: rgba(191, 119, 173, 0.18);
+  color: #784762;
+}
+
+.mix-machine-overlay [hidden] { display: none !important; }
+
+@keyframes mix-toast-pop {
+  from { opacity: 0; transform: translate(-50%, -5px) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@media (max-height: 680px) {
+  .mix-machine-panel { gap: 5px; padding: 8px; }
+  .mix-machine-header h2 { font-size: 20px; }
+  .mix-machine-header p { display: none; }
+  .mix-board-shell { width: min(100%, calc((100dvh - 155px) * 0.72)); }
+  .mix-machine-panel.is-result .mix-board-shell { width: min(48%, 160px); }
+  .mix-lanes button { min-height: 31px; }
+  .mix-setup-controls .primary-button { min-height: 38px; }
+  .mix-result { gap: 5px; }
+  .mix-effect-card { min-height: 54px; }
+}
+
+@media (max-width: 350px) {
+  .mix-machine-panel { border-radius: 20px; }
+  .mix-lanes button { padding-inline: 2px; font-size: 10px; }
+  .mix-effect-card { grid-template-columns: 24px 1fr; padding: 5px; }
+  .mix-effect-card > span { width: 24px; height: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mix-hit-toast { animation: none; }
+  .mix-board-shell { transition: none; }
+}
