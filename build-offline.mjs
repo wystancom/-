@@ -13,7 +13,17 @@ let offlineHtml = sourceHtml
   .replace("  <!-- OFFLINE_SCRIPT -->\n", `  <script>\n${js}\n  </script>\n`)
   .replace(/\s*<script src="game\.js(?:\?[^\"]*)?" defer><\/script>\n/, "");
 
-for (const filename of ["xiaoche-v6.jpg", "qiaoan-v6.jpg", "jibai-v6.jpg", "xiaokui-v6.jpg"]) {
+for (const filename of [
+  "xiaoche-v7.jpg",
+  "qiaoan-v7.jpg",
+  "jibai-v7.jpg",
+  "xiaokui-v7.jpg",
+  "lingyin-v3.jpg",
+  "tangmo-v3.jpg",
+  "baiyu-v3.jpg",
+  "xialan-v3.jpg",
+  "songyao-v3.jpg"
+]) {
   const assetPath = path.join(projectDir, "assets", "characters", filename);
   const encoded = fs.readFileSync(assetPath).toString("base64");
   offlineHtml = offlineHtml.replaceAll(`assets/characters/${filename}`, `data:image/jpeg;base64,${encoded}`);
