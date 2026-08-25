@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#120d12">
+  <meta name="color-scheme" content="dark">
+  <title>谁是男娘</title>
+  <!-- OFFLINE_STYLE -->
+  <link rel="stylesheet" href="styles.css?v=13">
+</head>
+<body>
+  <main id="app" class="game-shell" aria-label="谁是男娘手机试玩">
+    <section class="viewfinder" aria-label="摄影棚取景器">
+      <div id="portrait" class="portrait" aria-live="polite"></div>
+      <div class="photo-vignette" aria-hidden="true"></div>
+      <div class="focus-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="exposure-scale" aria-hidden="true">1/125&nbsp;&nbsp;F2.0&nbsp;&nbsp;ISO 400</div>
+
+      <header class="camera-hud">
+        <div class="project-mark"><span>PRIVATE SET · 18+</span><b>WHO?</b></div>
+        <div class="hud-stats">
+          <span id="casePill" class="hud-pill">1/9</span>
+          <div id="trustMeter" class="trust-meter" aria-label="信任度 100">
+            <span>♥</span><i><em id="trustFill"></em></i><b id="trustValue">100</b>
+          </div>
+          <span id="coinPill" class="hud-pill coin-pill">¥0</span>
+          <button id="albumButton" class="hud-pill album-pill" type="button" aria-label="打开授权写真收藏">▣ 0</button>
+        </div>
+      </header>
+
+      <div id="hotspotLayer" class="hotspot-layer" aria-label="现场观察点"></div>
+
+      <div class="visitor-caption">
+        <span id="visitorAge" class="adult-chip">24+ · ADULT</span>
+        <h1 id="visitorName">小澈</h1>
+        <p id="visitorRole">甜酷舞见</p>
+      </div>
+
+      <div id="speechBubble" class="speech-bubble">今天想拍两种状态。</div>
+
+      <div class="evidence-rail" aria-live="polite">
+        <span id="actionCount" class="film-progress">○ ○ ○ ○</span>
+        <div class="clue-heading">
+          <span class="clue-label">关键信息</span>
+          <span id="clueQuality" class="clue-quality">未记录</span>
+        </div>
+        <span id="latestClue" class="latest-clue">点击人物热点，或到资料、对话里记录线索</span>
+        <div id="clueChips" class="clue-chips" aria-label="已记录线索"></div>
+      </div>
+    </section>
+
+    <section id="controlDeck" class="control-deck" aria-label="摄影调查工具">
+      <nav class="tool-tabs" aria-label="调查方式">
+        <button class="tab-button active" type="button" data-tab="observe"><span>⌖</span>现场</button>
+        <button class="tab-button" type="button" data-tab="records"><span>▤</span>资料</button>
+        <button class="tab-button" type="button" data-tab="talk"><span>◌</span>对话</button>
+      </nav>
+
+      <div id="drawerBody" class="drawer-body">
+        <div class="drawer-handle" aria-hidden="true"></div>
+        <div id="drawerBrief" class="drawer-brief">
+          <span>本次约拍</span><b id="bookingTitle">复古甜酷 · 双造型</b>
+          <p id="bookingCopy"></p>
+        </div>
+        <div id="observeHint" class="observe-hint">点击取景器中的对焦框，记录现场细节</div>
+        <div id="actionList" class="action-list" aria-live="polite"></div>
+      </div>
+
+      <button id="decisionTrigger" class="decision-trigger" type="button" disabled>
+        <span>◎</span><b>再记录 3 条线索</b>
+      </button>
+
+      <div id="decisionPanel" class="decision-panel" aria-hidden="true">
+        <div><span>最终判断</span><b>Ta 是男娘吗？</b></div>
+        <div class="decision-buttons">
+          <button id="decideYes" class="decision-button yes" type="button">肯定是男娘</button>
+          <button id="decideNo" class="decision-button no" type="button">一看就不是男娘</button>
+        </div>
+        <button id="cancelDecision" class="cancel-decision" type="button">继续调查</button>
+      </div>
+    </section>
+
+    <div id="introOverlay" class="overlay visible" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+      <div class="modal intro-modal">
+        <span class="modal-kicker">成年人 · 虚构角色 · 游戏判定</span>
+        <h2 id="introTitle">谁是男娘</h2>
+        <p>本游戏规则：男性角色只要以女装或明显女性化造型出镜，就归入“男娘”；Ta是否喜欢或接受这个称呼，不影响答案。至少记录三条线索，再按下判断快门。</p>
+        <div class="rules-grid">
+          <div><b>⌖</b><span>确认女装造型</span></div>
+          <div><b>▤</b><span>寻找男性信息</span></div>
+          <div><b>▣</b><span>答对收写真</span></div>
+        </div>
+        <button id="startGame" class="primary-button" type="button">进入夜间摄影棚</button>
+        <button id="introLounge" class="secondary-button" type="button">先去夜间小屋</button>
+      </div>
+    </div>
+
+    <div id="resultOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+      <div class="modal result-modal">
+        <div id="resultStamp" class="result-stamp">核验正确</div>
+        <h2 id="resultTitle">小澈属于男娘范畴</h2>
+        <p id="resultCopy"></p>
+        <div id="photoReward" class="photo-reward" aria-live="polite">
+          <div class="reward-polaroid">
+            <img id="rewardPhoto" alt="本轮解锁的成年虚构角色授权写真">
+            <span id="rewardPhotoName">授权收藏</span>
+          </div>
+          <div><b id="photoRewardTitle">获得一张授权写真</b><p id="photoRewardCopy">仅收录本人允许保存的企划成片。</p></div>
+        </div>
+        <button id="resultAlbumButton" class="result-album-entry" type="button" aria-label="打开角色相册">
+          <span class="result-album-icon" aria-hidden="true">▣</span>
+          <span><b>角色相册</b><small id="resultAlbumProgress">已收集 0 / 9 · 点击浏览</small></span>
+          <i aria-hidden="true">›</i>
+        </button>
+        <details class="evidence-details">
+          <summary>查看证据链</summary>
+          <div id="evidenceReview" class="evidence-review"></div>
+        </details>
+        <div class="reward-row">
+          <div><span>本单报酬</span><b id="caseReward">+¥0</b></div>
+          <div><span>专业评价</span><b id="caseGrade">A</b></div>
+        </div>
+        <button id="nextCase" class="primary-button" type="button">下一位来访者</button>
+      </div>
+    </div>
+
+    <div id="summaryOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+      <div class="modal summary-modal">
+        <span class="modal-kicker">收工结算</span>
+        <h2 id="summaryTitle">夜间企划，完成。</h2>
+        <div class="final-score"><b id="finalScore">0</b><span>专业分</span></div>
+        <div class="summary-grid">
+          <div><span>判断正确</span><b id="correctCount">0 / 9</b></div>
+          <div><span>平均信任</span><b id="averageTrust">0</b></div>
+          <div><span>本轮收入</span><b id="finalCoins">+¥0</b></div>
+        </div>
+        <p id="summaryCopy" class="summary-copy"></p>
+        <button id="openLounge" class="primary-button" type="button">去夜间小屋</button>
+        <button id="restartGame" class="secondary-button" type="button">再拍一轮</button>
+      </div>
+    </div>
+
+    <div id="albumOverlay" class="overlay album-overlay" role="dialog" aria-modal="true" aria-labelledby="albumTitle">
+      <div class="modal album-modal">
+        <section id="albumIndexView" class="album-index-view">
+          <button id="closeAlbum" class="album-return-button" type="button">← 返回游戏</button>
+          <div class="album-heading">
+            <span class="modal-kicker">本机收藏 · 角色图鉴</span>
+            <span id="albumCount" class="album-count">0 / 9</span>
+          </div>
+          <h2 id="albumTitle">角色相册</h2>
+          <p>判断正确即可收录角色；点击已解锁照片进入大图浏览。</p>
+          <div id="albumGrid" class="album-grid"></div>
+        </section>
+
+        <section id="albumDetailView" class="album-detail-view" hidden>
+          <div class="album-detail-topbar">
+            <button id="backToAlbum" class="album-return-button" type="button">← 返回相册</button>
+            <span id="albumDetailCounter">1 / 1</span>
+          </div>
+          <button id="albumPhotoStage" class="album-photo-stage" type="button" aria-label="切换完整照片与特写">
+            <img id="albumDetailPhoto" alt="角色收藏大图" draggable="false">
+            <span id="albumZoomHint">轻触查看特写</span>
+          </button>
+          <div class="album-detail-meta">
+            <span id="albumDetailRole">角色资料</span>
+            <h2 id="albumDetailName">角色名</h2>
+            <p id="albumDetailCaption">已收入角色相册</p>
+          </div>
+          <div class="album-detail-nav" aria-label="切换收藏角色">
+            <button id="albumPrev" type="button">‹ 上一张</button>
+            <button id="albumNext" type="button">下一张 ›</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="loungeOverlay" class="overlay lounge-overlay" role="dialog" aria-modal="true" aria-labelledby="loungeTitle">
+      <div class="modal lounge-modal">
+        <section id="loungeIndexView" class="lounge-index-view">
+          <div class="lounge-topbar">
+            <button id="closeLounge" class="album-return-button" type="button">← 返回结算</button>
+            <span id="loungeWallet" class="lounge-wallet">钱包 ¥0</span>
+          </div>
+          <div class="lounge-heading">
+            <span class="modal-kicker">局外养成 · 好感收藏</span>
+            <span id="loungeUnlockCount" class="album-count">0 / 9</span>
+          </div>
+          <h2 id="loungeTitle">夜间小屋</h2>
+          <p>把摄影报酬换成礼物，提升已收录角色的好感；五颗心可解锁专属双人合影。</p>
+          <div id="loungeGrid" class="lounge-grid"></div>
+        </section>
+
+        <section id="loungeRoomView" class="lounge-room-view" hidden>
+          <div class="lounge-topbar">
+            <button id="backToLounge" class="album-return-button" type="button">← 返回小屋</button>
+            <span id="roomWallet" class="lounge-wallet">钱包 ¥0</span>
+          </div>
+          <div class="room-hero">
+            <img id="roomPhoto" alt="成年虚构角色写真" draggable="false">
+            <div class="room-hero-copy">
+              <span id="roomRole">角色资料</span>
+              <h2 id="roomName">角色名</h2>
+              <b id="roomHearts" aria-label="好感一颗心">♥♡♡♡♡</b>
+            </div>
+          </div>
+          <div class="affinity-track" aria-label="好感进度"><i><em id="affinityFill"></em></i><span id="affinityValue">0 / 20</span></div>
+          <p id="roomLine" class="room-line">“拍摄结束后，坐一会儿吧。”</p>
+          <button id="chatWithCharacter" class="room-chat-button" type="button">聊聊天</button>
+          <div class="room-section-heading"><b>挑一份礼物</b><span>好感将保存在本机</span></div>
+          <div id="giftGrid" class="gift-grid"></div>
+          <div id="duetCard" class="duet-card locked">
+            <div class="duet-photo">
+              <img id="duetCharacterPhoto" alt="角色合影半身像" draggable="false">
+              <span class="player-silhouette" aria-label="玩家剪影"><i></i><b>YOU</b></span>
+              <strong>♡</strong>
+            </div>
+            <div><b id="duetTitle">双人合影尚未解锁</b><p id="duetCopy">达到五颗心后，解锁 Ta 与玩家的专属合影。</p></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="successFx" class="success-fx" aria-hidden="true">
+      <div class="success-halo"></div>
+      <div class="success-ring">♡</div>
+      <span class="success-particle s1">✦</span>
+      <span class="success-particle s2">♡</span>
+      <span class="success-particle s3">✦</span>
+      <span class="success-particle s4">❀</span>
+      <span class="success-particle s5">♡</span>
+      <span class="success-particle s6">✦</span>
+      <b class="success-shot">♡ NICE SHOT ♡</b>
+    </div>
+
+    <div id="slapMark" class="slap-mark" aria-hidden="true">
+      <svg class="handprint" viewBox="0 0 620 720" role="presentation"><g fill="currentColor">
+        <ellipse cx="324" cy="474" rx="150" ry="177" transform="rotate(-10 324 474)"/>
+        <rect x="150" y="185" width="72" height="300" rx="36" transform="rotate(-28 186 335)"/>
+        <rect x="231" y="77" width="74" height="334" rx="37" transform="rotate(-13 268 244)"/>
+        <rect x="324" y="42" width="78" height="354" rx="39" transform="rotate(2 363 219)"/>
+        <rect x="415" y="82" width="74" height="326" rx="37" transform="rotate(15 452 245)"/>
+        <rect x="492" y="171" width="70" height="278" rx="35" transform="rotate(30 527 310)"/>
+        <rect x="272" y="575" width="150" height="144" rx="56" transform="rotate(-9 347 647)"/>
+      </g></svg>
+      <b class="slap-sfx">啪！</b>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+  <!-- OFFLINE_SCRIPT -->
+  <script src="game.js?v=22" defer></script>
+</body>
+</html>
